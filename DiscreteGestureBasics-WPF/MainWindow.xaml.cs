@@ -21,6 +21,15 @@ namespace Microsoft.Samples.Kinect.DiscreteGestureBasics
     using System.Windows.Controls;
     using Microsoft.Kinect;
     using Microsoft.Kinect.VisualGestureBuilder;
+    using System.Diagnostics;
+    using static System.Object;
+    using static System.Windows.Threading.DispatcherObject;
+    using static System.Windows.DependencyObject;
+    using static System.Windows.Freezable;
+    using static System.Windows.Media.Animation.Animatable;
+    using static System.Windows.Media.ImageSource;
+    using static System.Windows.Media.Imaging.BitmapSource;
+    using static System.Windows.Media.Imaging.BitmapImage;
 
     /// <summary>
     /// Interaction logic for the MainWindow
@@ -46,6 +55,8 @@ namespace Microsoft.Samples.Kinect.DiscreteGestureBasics
         
         /// <summary> List of gesture detectors, there will be one detector created for each potential body (max of 6) </summary>
         private List<GestureDetector> gestureDetectorList = null;
+
+        int cpt = 0;
 
         /// <summary>
         /// Initializes a new instance of the MainWindow class
@@ -148,32 +159,6 @@ namespace Microsoft.Samples.Kinect.DiscreteGestureBasics
         }
 
         /// <summary>
-        /// Get or set the label position.
-        /// </summary>
-        public string TextLabelPosition
-        {
-            get
-            {
-                return textelabelPosition;
-            }
-
-            set
-            {
-                if (this.textelabelPosition != value)
-                {
-                    this.textelabelPosition = value;
-
-                    // notify any bound elements that the text has changed
-                    if (this.PropertyChanged != null)
-                    {
-                        this.PropertyChanged(this, new PropertyChangedEventArgs("labelPosition"));
-                    }
-                }
-            }
-        }
-
-
-        /// <summary>
         /// Execute shutdown tasks
         /// </summary>
         /// <param name="sender">object sending the event</param>
@@ -252,8 +237,13 @@ namespace Microsoft.Samples.Kinect.DiscreteGestureBasics
             if (dataReceived)
             {
                 // visualize the new body data
-                this.kinectBodyView.UpdateBodyFrame(this.bodies);
-                TextLabelPosition = this.kinectBodyView.getPosition();
+                int scene = this.kinectBodyView.UpdateBodyFrame(this.bodies);
+
+                if (scene == 1)
+                {
+                    fondDecran1.Visibility = Visibility.Hidden;
+                    fondDecran2.Visibility = Visibility.Visible;
+                }
 
                 // we may have lost/acquired bodies, so update the corresponding gesture detectors
                 if (this.bodies != null)

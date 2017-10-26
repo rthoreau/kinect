@@ -112,6 +112,7 @@ namespace Microsoft.Samples.Kinect.DiscreteGestureBasics
         string positionMain = "";
         bool success = false;
         static string mainActive = "left";
+        int scene = 0;
 
         /// <summary>
         /// Initializes a new instance of the KinectBodyView class
@@ -204,7 +205,7 @@ namespace Microsoft.Samples.Kinect.DiscreteGestureBasics
         /// Should be called whenever a new BodyFrameArrivedEvent occurs
         /// </summary>
         /// <param name="bodies">Array of bodies to update</param>
-        public void UpdateBodyFrame(Body[] bodies)
+        public int UpdateBodyFrame(Body[] bodies)
         {
             if (bodies != null)
             {
@@ -260,6 +261,7 @@ namespace Microsoft.Samples.Kinect.DiscreteGestureBasics
                     this.drawingGroup.ClipGeometry = new RectangleGeometry(new Rect(0.0, 0.0, this.displayWidth, this.displayHeight));
                 }
             }
+            return scene;
         }
 
         /// <summary>
@@ -353,7 +355,6 @@ namespace Microsoft.Samples.Kinect.DiscreteGestureBasics
                         drawingContext.DrawEllipse(this.handOpenBrush, null, handPosition, HandSize, HandSize);
                         if (mainActive == main)
                         {
-                            Debug.Print(mainActive);
 
                             if (handPosition.X > 170 && handPosition.X < 200 && handPosition.Y > 155 && handPosition.Y < 185)
                             {
@@ -440,6 +441,7 @@ namespace Microsoft.Samples.Kinect.DiscreteGestureBasics
                 if (compteur == 12)
                 {
                     Debug.Print("ok");
+                    scene = 1;
                     success = true;
                     compteur = 0;
                     timer.Enabled = false;
@@ -462,9 +464,9 @@ namespace Microsoft.Samples.Kinect.DiscreteGestureBasics
             }
         }
 
-        public String getPosition()
+        public String getPosition(int test)
         {
-            return positionMain;
+            return positionMain + " " + test;
         }
 
 

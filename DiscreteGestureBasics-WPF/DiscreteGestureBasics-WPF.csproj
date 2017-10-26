@@ -146,6 +146,7 @@
     <Content Include="Database\Seated.gbd">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Images\fdcrn.jpg" />
     <Resource Include="Images\hand-1318340_960_720.png" />
     <Resource Include="Images\wallhaven-169777.jpg" />
   </ItemGroup>

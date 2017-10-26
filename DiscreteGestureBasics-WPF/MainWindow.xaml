@@ -38,8 +38,9 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Image Grid.Row="1" Source="Images\wallhaven-169777.jpg" HorizontalAlignment="Left" Stretch="Fill" Margin="-10,0" Grid.RowSpan="2" />
-        <Image Grid.Row="1" Source="Images\hand-1318340_960_720.png" HorizontalAlignment="Center" VerticalAlignment="Top" Width="200" Height="200" Margin="62,249,478,0" />
+        <Image Grid.Row="1" Source="Images\fdcrn.jpg" HorizontalAlignment="Left" Stretch="Fill" Margin="-10,0" Grid.RowSpan="2" Name="fondDecran2" Visibility="Hidden" />
+        <Image Grid.Row="1" Source="Images\wallhaven-169777.jpg" HorizontalAlignment="Left" Stretch="Fill" Margin="-10,0" Grid.RowSpan="2" Name="fondDecran1" />
+        <Image Grid.Row="1" Source="Images\hand-1318340_960_720.png" HorizontalAlignment="Center" VerticalAlignment="Top" Width="200" Height="200" Margin="62,249,478,0"/>
 
         <Grid x:Name="contentGrid" Grid.Row="1" Grid.RowSpan="2" >
             <Grid.ColumnDefinitions>
@@ -72,6 +73,6 @@
                 </StatusBarItem.RenderTransform>
             </StatusBarItem>
         </StatusBar>
-        <Label Name="labelPosition" Content="{Binding TextLabelPosition, Mode=TwoWay}" Foreground="White" HorizontalAlignment="Left" Margin="25,478,0,0" Grid.Row="1" VerticalAlignment="Bottom" Width="137" RenderTransformOrigin="0.457,0.538"/>
+        <Label Name="labelPosition" Content="" Foreground="White" HorizontalAlignment="Left" Margin="25,0,0,0" Grid.Row="1" VerticalAlignment="Bottom" Width="673" RenderTransformOrigin="0.457,0.538"/>
     </Grid>
 </Window>
