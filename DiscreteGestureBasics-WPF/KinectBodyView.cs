@@ -111,6 +111,7 @@ namespace Microsoft.Samples.Kinect.DiscreteGestureBasics
         static int compteurCancel = 0;
         string positionMain = "";
         bool success = false;
+        static string mainActive = "left";
 
         /// <summary>
         /// Initializes a new instance of the KinectBodyView class
@@ -241,9 +242,17 @@ namespace Microsoft.Samples.Kinect.DiscreteGestureBasics
                             }
 
                             this.DrawBody(joints, jointPoints, dc, drawPen);
-
-                            this.DrawHand(body.HandLeftState, jointPoints[JointType.HandLeft], dc, true);
-                            this.DrawHand(body.HandRightState, jointPoints[JointType.HandRight], dc, false);
+                            string actionLeft = "";
+                            string actionRight = "";
+                            if (body.HandLeftState == HandState.Open && body.HandRightState != HandState.Open)
+                            {
+                                actionLeft = "open";
+                            }else if (body.HandRightState == HandState.Open && body.HandLeftState != HandState.Open)
+                            {
+                                actionRight = "right";
+                            }
+                            this.DrawHand(body.HandLeftState, jointPoints[JointType.HandLeft], dc, "left", actionLeft);
+                            this.DrawHand(body.HandRightState, jointPoints[JointType.HandRight], dc, "right", actionRight);
                         }
                     }
 
@@ -328,7 +337,7 @@ namespace Microsoft.Samples.Kinect.DiscreteGestureBasics
         /// <param name="handState">state of the hand</param>
         /// <param name="handPosition">position of the hand</param>
         /// <param name="drawingContext">drawing context to draw to</param>
-        private void DrawHand(HandState handState, Point handPosition, DrawingContext drawingContext, bool left)
+        private void DrawHand(HandState handState, Point handPosition, DrawingContext drawingContext, string main, string actionActive)
         {
             
             positionMain = String.Format("{0}, {1}", handPosition.X, handPosition.Y);
@@ -342,9 +351,10 @@ namespace Microsoft.Samples.Kinect.DiscreteGestureBasics
                     if (!success)
                     {
                         drawingContext.DrawEllipse(this.handOpenBrush, null, handPosition, HandSize, HandSize);
-                        if (left)
+                        if (mainActive == main)
                         {
-                            Debug.Print(positionMain); ;
+                            Debug.Print(mainActive);
+
                             if (handPosition.X > 170 && handPosition.X < 200 && handPosition.Y > 155 && handPosition.Y < 185)
                             {
                                 compteurCancel = 0;
@@ -369,6 +379,16 @@ namespace Microsoft.Samples.Kinect.DiscreteGestureBasics
                                 }
                             }
                         }
+                        else
+                        {
+                            Debug.Print("changement de main");
+                            compteur = 0;
+                            compteurCancel = 0;
+                            timer.Enabled = false;
+                            timerCancel.Enabled = false;
+                            mainActive = main;
+                            Debug.Print(mainActive);
+                        }
                     }
                     else
                     {
@@ -388,7 +408,7 @@ namespace Microsoft.Samples.Kinect.DiscreteGestureBasics
                 default:
                     if (timer.Enabled && compteur > 0)
                     {
-                        if (left)
+                        if (main == mainActive)
                         {
 
                             ElapsedEventHandler cancel = new ElapsedEventHandler(OnTimedEventCancel);
