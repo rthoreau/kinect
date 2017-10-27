@@ -48,7 +48,7 @@ namespace Microsoft.Samples.Kinect.DiscreteGestureBasics
         /// <summary>
         /// Brush used for drawing hands that are currently tracked as opened
         /// </summary>
-        private readonly Brush handOpenBrush = new SolidColorBrush(Color.FromArgb(128, 0, 255, 0));
+        private readonly Brush handOpenBrush = new SolidColorBrush(Color.FromArgb(40, 151, 191, 214));
 
         /// <summary>
         /// Brush used for drawing hands that are currently tracked as in lasso (pointer) position
@@ -111,8 +111,29 @@ namespace Microsoft.Samples.Kinect.DiscreteGestureBasics
         static int compteurCancel = 0;
         string positionMain = "";
         bool success = false;
+        bool successVideo = false;
         static string mainActive = "left";
         int scene = 0;
+        int compteurVideo;
+        Timer timerVideo = new Timer();
+        int compteurIntro;
+        Timer timerIntro = new Timer();
+        bool videoStarted = false;
+
+        int compteurFinIntro;
+        Timer timerFinIntro = new Timer();
+        bool accederMain = false;
+
+        int compteurCancelFinIntro;
+        Timer timerCancelFinIntro = new Timer();
+
+        int compteurDehors;
+        Timer timerDehors = new Timer();
+        bool infoDehors = false;
+
+        int compteurCancelDehors;
+        Timer timerCancelDehors = new Timer();
+
 
         /// <summary>
         /// Initializes a new instance of the KinectBodyView class
@@ -175,12 +196,12 @@ namespace Microsoft.Samples.Kinect.DiscreteGestureBasics
             // populate body colors, one for each BodyIndex
             this.bodyColors = new List<Pen>();
 
-            this.bodyColors.Add(new Pen(Brushes.Red, 6));
-            this.bodyColors.Add(new Pen(Brushes.Orange, 6));
-            this.bodyColors.Add(new Pen(Brushes.Green, 6));
-            this.bodyColors.Add(new Pen(Brushes.Blue, 6));
-            this.bodyColors.Add(new Pen(Brushes.Indigo, 6));
-            this.bodyColors.Add(new Pen(Brushes.Violet, 6));
+            this.bodyColors.Add(new Pen(Brushes.CornflowerBlue, 6));
+            this.bodyColors.Add(new Pen(Brushes.CornflowerBlue, 6));
+            this.bodyColors.Add(new Pen(Brushes.CornflowerBlue, 6));
+            this.bodyColors.Add(new Pen(Brushes.CornflowerBlue, 6));
+            this.bodyColors.Add(new Pen(Brushes.CornflowerBlue, 6));
+            this.bodyColors.Add(new Pen(Brushes.CornflowerBlue, 6));
 
             // Create the drawing group we'll use for drawing
             this.drawingGroup = new DrawingGroup();
@@ -341,8 +362,36 @@ namespace Microsoft.Samples.Kinect.DiscreteGestureBasics
         /// <param name="drawingContext">drawing context to draw to</param>
         private void DrawHand(HandState handState, Point handPosition, DrawingContext drawingContext, string main, string actionActive)
         {
-            
-            positionMain = String.Format("{0}, {1}", handPosition.X, handPosition.Y);
+            if (scene == 0 && !videoStarted)
+            {
+
+                ElapsedEventHandler timeIntro = new ElapsedEventHandler(OnTimedEventIntro);
+                if (!timerIntro.Enabled)
+                {
+                    Debug.Print("Début intro");
+                    timerIntro.Enabled = true;
+                    timerIntro.Interval = 7200;
+                    timerIntro.Elapsed += timeIntro;
+                }
+                videoStarted = true;
+            }
+            if (!successVideo && success)
+            {
+                
+                if (scene == 3)
+                {
+
+                    ElapsedEventHandler timeVideo = new ElapsedEventHandler(OnTimedEventVideo);
+                    if (!timerVideo.Enabled)
+                    {
+                        Debug.Print("Début vidéo");
+                        timerVideo.Enabled = true;
+                        timerVideo.Interval = 1220;
+                        timerVideo.Elapsed += timeVideo;
+                    }
+                }
+                successVideo = true;
+            }
             switch (handState)
             {
                 /*case HandState.Closed:
@@ -350,13 +399,15 @@ namespace Microsoft.Samples.Kinect.DiscreteGestureBasics
                     break;
                     */
                 case HandState.Open:
-                    if (!success)
+                    if (!success && scene == 2)
                     {
                         drawingContext.DrawEllipse(this.handOpenBrush, null, handPosition, HandSize, HandSize);
                         if (mainActive == main)
                         {
 
-                            if (handPosition.X > 170 && handPosition.X < 200 && handPosition.Y > 155 && handPosition.Y < 185)
+                            positionMain = String.Format("{0}, {1}", handPosition.X, handPosition.Y);
+
+                            if (handPosition.X > 40 && handPosition.X < 60 && handPosition.Y > 185 && handPosition.Y < 205)
                             {
                                 compteurCancel = 0;
                                 timerCancel.Enabled = false;
@@ -364,9 +415,9 @@ namespace Microsoft.Samples.Kinect.DiscreteGestureBasics
                                 if (!timer.Enabled)
                                 {
                                     timer.Enabled = true;
-                                    timer.Interval = 500;
+                                    timer.Interval = 300;
                                     timer.Elapsed += compter;
-                                    Debug.Print("Dans la zone");
+                                    Debug.Print("Dans la zone" + scene);
                                 }
                             }
                             else
@@ -382,21 +433,124 @@ namespace Microsoft.Samples.Kinect.DiscreteGestureBasics
                         }
                         else
                         {
-                            Debug.Print("changement de main");
                             compteur = 0;
                             compteurCancel = 0;
                             timer.Enabled = false;
                             timerCancel.Enabled = false;
                             mainActive = main;
-                            Debug.Print(mainActive);
                         }
                     }
                     else
                     {
-                        compteur = 0;
-                        compteurCancel = 0;
-                        timer.Enabled = false;
-                        timerCancel.Enabled = false;
+                        if (timer.Enabled || timerCancel.Enabled || compteur != 0 || compteurCancel != 0)
+                        {
+                            compteur = 0;
+                            compteurCancel = 0;
+                            timer.Enabled = false;
+                            timerCancel.Enabled = false;
+                        }
+                    }
+                    if (!accederMain && scene == 1)
+                    {
+                        drawingContext.DrawEllipse(this.handOpenBrush, null, handPosition, HandSize, HandSize);
+                        if (mainActive == main)
+                        {
+
+                            positionMain = String.Format("{0}, {1}", handPosition.X, handPosition.Y);
+
+                            if (handPosition.X > 230 && handPosition.X < 260 && handPosition.Y > 210 && handPosition.Y < 240)
+                            {
+                                compteurCancelFinIntro = 0;
+                                timerCancelFinIntro.Enabled = false;
+                                ElapsedEventHandler compterFinIntro = new ElapsedEventHandler(OnTimedEventFinIntro);
+                                if (!timerFinIntro.Enabled)
+                                {
+                                    timerFinIntro.Enabled = true;
+                                    timerFinIntro.Interval = 300;
+                                    timerFinIntro.Elapsed += compterFinIntro;
+                                    Debug.Print("Dans la zone");
+                                }
+                            }
+                            else
+                            {
+                                ElapsedEventHandler cancelFinIntro = new ElapsedEventHandler(OnTimedEventCancelFinIntro);
+                                if (!timerCancelFinIntro.Enabled)
+                                {
+                                    timerCancelFinIntro.Enabled = true;
+                                    timerCancelFinIntro.Interval = 100;
+                                    timerCancelFinIntro.Elapsed += cancelFinIntro;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            compteurFinIntro = 0;
+                            compteurCancelFinIntro = 0;
+                            timerFinIntro.Enabled = false;
+                            timerCancelFinIntro.Enabled = false;
+                            mainActive = main;
+                        }
+                    }
+                    else
+                    {
+                        if (timerFinIntro.Enabled || timerCancelFinIntro.Enabled || compteurFinIntro != 0 || compteurCancelFinIntro != 0)
+                        {
+                            compteurFinIntro = 0;
+                            compteurCancelFinIntro = 0;
+                            timerFinIntro.Enabled = false;
+                            timerCancelFinIntro.Enabled = false;
+                        }
+                    }
+                    if (!infoDehors && scene == 4)
+                    {
+                        drawingContext.DrawEllipse(this.handOpenBrush, null, handPosition, HandSize, HandSize);
+                        if (mainActive == main)
+                        {
+
+                            positionMain = String.Format("{0}, {1}", handPosition.X, handPosition.Y);
+
+                            if (handPosition.X > 220 && handPosition.X < 250 && handPosition.Y > 150 && handPosition.Y < 190)
+                            {
+                                compteurCancelDehors = 0;
+                                timerCancelDehors.Enabled = false;
+                                ElapsedEventHandler compterDehors = new ElapsedEventHandler(OnTimedEventDehors);
+                                if (!timerDehors.Enabled)
+                                {
+                                    timerDehors.Enabled = true;
+                                    timerDehors.Interval = 300;
+                                    timerDehors.Elapsed += compterDehors;
+                                    Debug.Print("Dans la zone");
+                                }
+                            }
+                            else
+                            {
+                                ElapsedEventHandler cancelDehors = new ElapsedEventHandler(OnTimedEventCancelDehors);
+                                if (!timerCancelDehors.Enabled)
+                                {
+                                    timerCancelDehors.Enabled = true;
+                                    timerCancelDehors.Interval = 100;
+                                    timerCancelDehors.Elapsed += cancelDehors;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            compteurDehors = 0;
+                            compteurCancelDehors = 0;
+                            timerDehors.Enabled = false;
+                            timerCancelDehors.Enabled = false;
+                            mainActive = main;
+                        }
+                    }
+                    else
+                    {
+                        if (timerDehors.Enabled || timerCancelDehors.Enabled || compteurDehors != 0 || compteurCancelDehors != 0)
+                        {
+                            compteurDehors = 0;
+                            compteurCancelDehors = 0;
+                            timerDehors.Enabled = false;
+                            timerCancelDehors.Enabled = false;
+                        }
                     }
                     break;
 
@@ -430,6 +584,7 @@ namespace Microsoft.Samples.Kinect.DiscreteGestureBasics
                     }
                     break;
             }
+            
         }
 
         private void OnTimedEvent(object source, ElapsedEventArgs e)
@@ -437,11 +592,10 @@ namespace Microsoft.Samples.Kinect.DiscreteGestureBasics
             if (timer.Enabled)
             {
                 compteur++;
-                Debug.Print("compteur ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ : " + compteur);
+                Debug.Print("Acces sortie : " + compteur);
                 if (compteur == 12)
                 {
-                    Debug.Print("ok");
-                    scene = 1;
+                    scene = 3;
                     success = true;
                     compteur = 0;
                     timer.Enabled = false;
@@ -455,7 +609,6 @@ namespace Microsoft.Samples.Kinect.DiscreteGestureBasics
                 compteurCancel++;
                 if (compteurCancel == 5)
                 {
-                    Debug.Print("cancel -------------------------------------------------------------");
                     compteur = 0;
                     compteurCancel = 0;
                     timer.Enabled = false;
@@ -464,9 +617,101 @@ namespace Microsoft.Samples.Kinect.DiscreteGestureBasics
             }
         }
 
-        public String getPosition(int test)
+        private void OnTimedEventVideo(object source, ElapsedEventArgs e)
         {
-            return positionMain + " " + test;
+            Debug.Print("videoEnCours");
+            if (timerVideo.Enabled)
+            {
+                compteurVideo++;
+                if (compteurVideo == 10)
+                {
+                    Debug.Print("video finie");
+                    compteurVideo = 0;
+                    timerVideo.Enabled = false;
+                    scene = 4;
+                }
+            }
+        }
+        private void OnTimedEventIntro(object source, ElapsedEventArgs e)
+        {
+            Debug.Print("Intro en cours");
+            if (timerIntro.Enabled)
+            {
+                compteurIntro++;
+                if (compteurIntro == 10)
+                {
+                    Debug.Print("Intro terminée");
+                    compteurIntro = 0;
+                    timerIntro.Enabled = false;
+                    scene = 1;
+                }
+            }
+        }
+        private void OnTimedEventFinIntro(object source, ElapsedEventArgs e)
+        {
+            Debug.Print("Valider Tutoriel");
+            if (timerFinIntro.Enabled)
+            {
+                compteurFinIntro++;
+                if (compteurFinIntro == 10)
+                {
+                    Debug.Print("Sortie terminée");
+                    compteurFinIntro = 0;
+                    accederMain = true;
+                    timerFinIntro.Enabled = false;
+                    scene = 2;
+                }
+            }
+        }
+        private void OnTimedEventCancelFinIntro(object source, ElapsedEventArgs e)
+        {
+            if (timerCancelFinIntro.Enabled)
+            {
+                compteurCancelFinIntro++;
+                if (compteurCancelFinIntro == 5)
+                {
+                    compteurFinIntro = 0;
+                    compteurCancelFinIntro = 0;
+                    timerFinIntro.Enabled = false;
+                    timerCancelFinIntro.Enabled = false;
+                }
+            }
+        }
+
+        private void OnTimedEventDehors(object source, ElapsedEventArgs e)
+        {
+            Debug.Print("Voir info");
+            if (timerDehors.Enabled)
+            {
+                compteurDehors++;
+                if (compteurDehors == 10)
+                {
+                    Debug.Print("Fin - affichage quizz");
+                    compteurDehors = 0;
+                    infoDehors = true;
+                    timerDehors.Enabled = false;
+                    scene = 5;
+                }
+            }
+        }
+        private void OnTimedEventCancelDehors(object source, ElapsedEventArgs e)
+        {
+            if (timerCancelDehors.Enabled)
+            {
+                compteurCancelDehors++;
+                if (compteurCancelDehors == 5)
+                {
+                    compteurDehors = 0;
+                    compteurCancelDehors = 0;
+                    timerDehors.Enabled = false;
+                    timerCancelDehors.Enabled = false;
+                }
+            }
+        }
+
+        public String getPosition()
+        {
+            return positionMain + "";
         }
 
 

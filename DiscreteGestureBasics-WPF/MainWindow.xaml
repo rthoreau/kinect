@@ -5,7 +5,7 @@
         Title="Discrete Gesture Basics"
         WindowStyle="None"
         WindowState="Maximized"
-        Closing="MainWindow_Closing">
+        Closing="MainWindow_Closing" Height="902.75" Width="1600.5">
     <Window.Resources>
         <SolidColorBrush x:Key="MediumGreyBrush" Color="#ff6e6e6e" />
         <SolidColorBrush x:Key="KinectPurpleBrush" Color="#ff52318f" />
@@ -38,9 +38,18 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Image Grid.Row="1" Source="Images\fdcrn.jpg" HorizontalAlignment="Left" Stretch="Fill" Margin="-10,0" Grid.RowSpan="2" Name="fondDecran2" Visibility="Hidden" />
-        <Image Grid.Row="1" Source="Images\wallhaven-169777.jpg" HorizontalAlignment="Left" Stretch="Fill" Margin="-10,0" Grid.RowSpan="2" Name="fondDecran1" />
-        <Image Grid.Row="1" Source="Images\hand-1318340_960_720.png" HorizontalAlignment="Center" VerticalAlignment="Top" Width="200" Height="200" Margin="62,249,478,0"/>
+        <WebBrowser Grid.Row="1" Name="BrowserInit" Margin="-10, 0,-10, 0" Source="http://antoine.kairos-agency.com/kinectintro/"/>
+
+        <Image Grid.Row="1" Source="Images\cailloux_2.jpg" HorizontalAlignment="Left" Stretch="Fill" Margin="-10,0" Grid.RowSpan="2" Name="finvideointro" Visibility="Hidden"/>
+
+        <Image Grid.Row="1" Source="Images\porte_main.jpg" HorizontalAlignment="Left" Stretch="Fill" Margin="-10,0" Grid.RowSpan="2" Name="actionmain" Visibility="Hidden"/>
+        
+        <WebBrowser Grid.Row="1" HorizontalAlignment="Left" Name="Browser1" Margin="-10,0,-10,0" Visibility="Hidden"/>
+
+        <Image Grid.Row="1" Source="Images\astronaute_image.jpg" HorizontalAlignment="Left" Stretch="Fill" Margin="-10,0" Grid.RowSpan="2" Name="fondDecran2" Visibility="Hidden" />
+        <Image Grid.Row="1" Source="Images\quizz_00.jpg" HorizontalAlignment="Left" Stretch="Fill" Margin="-10,0" Grid.RowSpan="2" Name="quizzImage" Visibility="Hidden" />
+        
+
 
         <Grid x:Name="contentGrid" Grid.Row="1" Grid.RowSpan="2" >
             <Grid.ColumnDefinitions>
@@ -74,5 +83,6 @@
             </StatusBarItem>
         </StatusBar>
         <Label Name="labelPosition" Content="" Foreground="White" HorizontalAlignment="Left" Margin="25,0,0,0" Grid.Row="1" VerticalAlignment="Bottom" Width="673" RenderTransformOrigin="0.457,0.538"/>
+        
     </Grid>
 </Window>

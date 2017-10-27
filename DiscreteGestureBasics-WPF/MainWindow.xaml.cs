@@ -30,6 +30,7 @@ namespace Microsoft.Samples.Kinect.DiscreteGestureBasics
     using static System.Windows.Media.ImageSource;
     using static System.Windows.Media.Imaging.BitmapSource;
     using static System.Windows.Media.Imaging.BitmapImage;
+    using System.Windows.Media;
 
     /// <summary>
     /// Interaction logic for the MainWindow
@@ -47,8 +48,6 @@ namespace Microsoft.Samples.Kinect.DiscreteGestureBasics
 
         /// <summary> Current status text to display </summary>
         private string statusText = null;
-        
-        private string textelabelPosition = null;
 
         /// <summary> KinectBodyView object which handles drawing the Kinect bodies to a View box in the UI </summary>
         private KinectBodyView kinectBodyView = null;
@@ -56,7 +55,17 @@ namespace Microsoft.Samples.Kinect.DiscreteGestureBasics
         /// <summary> List of gesture detectors, there will be one detector created for each potential body (max of 6) </summary>
         private List<GestureDetector> gestureDetectorList = null;
 
-        int cpt = 0;
+        int videoPLayed = 0;
+        int videoDehors = 0;
+        int quizz = 0;
+
+
+        void video_mediaEnded(object sender, RoutedEventArgs e)
+        {
+            ((MediaElement)sender).LoadedBehavior = MediaState.Stop;
+            ((MediaElement)sender).Position = new TimeSpan(0);
+            ((MediaElement)sender).LoadedBehavior = MediaState.Play;
+        }
 
         /// <summary>
         /// Initializes a new instance of the MainWindow class
@@ -238,11 +247,47 @@ namespace Microsoft.Samples.Kinect.DiscreteGestureBasics
             {
                 // visualize the new body data
                 int scene = this.kinectBodyView.UpdateBodyFrame(this.bodies);
-
                 if (scene == 1)
                 {
-                    fondDecran1.Visibility = Visibility.Hidden;
+                    BrowserInit.Visibility = Visibility.Hidden;
+                    BrowserInit.Navigate(new Uri("https://www.google.fr"));
+                    finvideointro.Visibility = Visibility.Visible;
+                }
+                if (scene == 2)
+                {
+                    BrowserInit.Visibility = Visibility.Hidden;
+                    BrowserInit.Navigate(new Uri("https://www.google.fr"));
+                    actionmain.Visibility = Visibility.Visible;
+                }
+                if (scene == 3)
+                {
+                    if (videoPLayed == 0)
+                    {
+                        
+                        videoPLayed++;
+                        actionmain.Visibility = Visibility.Hidden;
+                        Browser1.Visibility = Visibility.Visible;
+                        //Browser1.Source = new Uri("https://www.youtube.com/");
+
+                        Debug.Print("Astronaute");
+
+                        this.Browser1.Navigate(new Uri("http://antoine.kairos-agency.com/kinect/"));
+
+                    }
+                }
+                if (scene == 4 && videoDehors == 0)
+                {
+                    Debug.Print("Vidéo Finie");
+                    Browser1.Visibility = Visibility.Hidden;
+                    Browser1.Navigate(new Uri("https://www.google.fr"));
                     fondDecran2.Visibility = Visibility.Visible;
+                    videoDehors++;
+                }
+                if (scene == 5 && quizz == 0)
+                {
+                    fondDecran2.Visibility = Visibility.Hidden;
+                    quizzImage.Visibility = Visibility.Visible;
+                    quizz++;
                 }
 
                 // we may have lost/acquired bodies, so update the corresponding gesture detectors
